@@ -1,0 +1,698 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>8</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>368</x>
+      <y>40</y>
+      <w>192</w>
+      <h>200</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;abstract&gt;&gt;
+Usuario
+--
+- id: int
+- nombre: str
+- email: str
+- password_hash: str
+- fecha_creacion: datetime
+- ultimo_acceso: datetime
+--
++ verificar_password(password: str): bool
++ actualizar_ultimo_acceso(): void
++ puede_crear_requerimiento(): bool
++ puede_asignar_tecnico(): bool
++ __str__(): str #validar mail </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>0</x>
+      <y>344</y>
+      <w>160</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>Solicitante
+--
+--
++ puede_crear_requerimiento(): bool
++ puede_asignar_tecnico(): bool</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>184</x>
+      <y>344</y>
+      <w>280</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>Operador
+--
+--
++ puede_crear_requerimiento(): bool
++ puede_asignar_tecnico(): bool
++ __init__(nombre: str, email: str, password: str)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>472</x>
+      <y>344</y>
+      <w>184</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>Tecnico
+--
+--
++ puede_crear_requerimiento(): bool
++ puede_asignar_tecnico(): bool
++ __init__(nombre: str, email: str, password: str)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>688</x>
+      <y>328</y>
+      <w>192</w>
+      <h>136</h>
+    </coordinates>
+    <panel_attributes>Supervisor
+--
+- supervisados: List[Usuario]
+- notificaciones: List[Notificacion]
+--
++ puede_crear_requerimiento(): bool
++ puede_asignar_tecnico(): bool
++ agregar_supervisado(usuario): void
++ recibir_notificacion(notif): void
++ notificaciones_no_leidas(): List
++ __init__(nombre: str, email: str, password: str)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>72</x>
+      <y>296</y>
+      <w>416</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>500.0;20.0;10.0;20.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>464</x>
+      <y>232</y>
+      <w>120</w>
+      <h>128</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0;130.0;100.0;130.0;140.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>992</x>
+      <y>0</y>
+      <w>352</w>
+      <h>264</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;abstract&gt;&gt;
+Requerimiento
+--
+- id: int
+- descripcion: str
+- solicitante: Solicitante
+- estado: EstadoRequerimiento
+- tecnico_asignado: Tecnico
+- fecha_creacion: datetime
+- fecha_resolucion: datetime
+- comentarios: List[Comentario]
+- eventos: List[Evento]
+--
++ __init__(descrip: str, solic: Solic)#parametros#crear obj
++ agregar_comentario(texto, autor): Comentario
++ agregar_evento(evento: Evento): None
++ asignar_tecnico(tecnico): void
++ resolver(solucion): void
++ reabrir(): void
++ derivar(nuevo_tecnico): void
++ calcular_prioridad(): int</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>904</x>
+      <y>328</y>
+      <w>192</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>Incidente
+--
+- urgencia: Urgencia
+- servicio: Servicio
+--
++ __init__(descripcion: str, solicitante: Solicitante, urgencia: Urgencia, servicio: Servicio = None)
++ calcular_prioridad(): int
++ cambiar_urgencia(nueva): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1120</x>
+      <y>328</y>
+      <w>192</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>Solicitud
+--
+- tipo_solicitud: TipoSolicitud
+- servicio: Servicio
+--
++ __init__(descrip: str, solicitante: Sol, tipo_solicitud: TipoSolicitud, servicio: Servicio)
++ calcular_prioridad(): int</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1000</x>
+      <y>256</y>
+      <w>120</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>130.0;10.0;130.0;50.0;10.0;50.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1096</x>
+      <y>256</y>
+      <w>160</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0;180.0;50.0;180.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>912</x>
+      <y>488</y>
+      <w>160</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;interface&gt;&gt;
+Urgencia
+--
+--
++ calcular_prioridad(): int
++ get_nombre(): str
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>856</x>
+      <y>616</y>
+      <w>128</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>UrgenciaCritica
+--
+--
++ calcular_prioridad(): int
++ get_nombre(): str</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>944</x>
+      <y>680</y>
+      <w>128</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>UrgenciaImportante
+--
+--
++ calcular_prioridad(): int
++ get_nombre(): str</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1024</x>
+      <y>616</y>
+      <w>128</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>UrgenciaMenor
+--
+--
++ calcular_prioridad(): int
++ get_nombre(): str</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1016</x>
+      <y>552</y>
+      <w>88</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;90.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>992</x>
+      <y>416</y>
+      <w>56</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=1
+&lt; usa</panel_attributes>
+    <additional_attributes>10.0;90.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>240</x>
+      <y>424</y>
+      <w>192</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;abstract&gt;&gt;
+Registro
+--
+- texto: str
+- autor: Usuario
+- fecha: datetime
+--
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>152</x>
+      <y>576</y>
+      <w>96</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>Comentario
+--
+--
+bg=red
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>408</x>
+      <y>576</y>
+      <w>128</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>Notificacion
+--
+- leida: bool
+--
++ marcar_como_leida(): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>264</x>
+      <y>576</y>
+      <w>128</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>Evento
+--
+- tipo: TipoEvento
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>176</x>
+      <y>752</y>
+      <w>352</w>
+      <h>128</h>
+    </coordinates>
+    <panel_attributes>EventoFactory
+
+--
+bg=green
+--
++crear_evento_creacion(req, autor)
++crear_evento_asignacion(req, tecnico, operador)
++crear_evento_derivacion(req, tecnico_origen, tecnico_destino)
++crear_evento_resolucion(req, tecnico, solucion)
++crear_evento_reapertura(req, solicitante, motivo)
++crear_evento_cambio_estado(re, autor, estado_viejo, estado_nuevo)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>312</x>
+      <y>632</y>
+      <w>56</w>
+      <h>136</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.
+&lt;&lt;crea&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>176</x>
+      <y>96</y>
+      <w>160</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>Servicio
+--
+- id: int
+- nombre: str
+- descripcion: str
+- activo: bool
+--
++ activar(): void
++ desactivar(): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>608</x>
+      <y>664</y>
+      <w>240</w>
+      <h>224</h>
+    </coordinates>
+    <panel_attributes>SistemaAyuda
+bg=green
+--
+- usuarios: List[Usuario]
+- requerimientos: List[Requerimiento]
+- servicios: List[Servicio]
+--
++ registrar_usuario(...): Usuario
++ autenticar(email, password): Usuario
++ crear_incidente(...): Incidente
++ crear_solicitud(...): Solicitud
++ asignar_tecnico(...): void
++ derivar_requerimiento(...): void
++ resolver_requerimiento(...): void
++ reabrir_requerimiento(...): void
++ cambio_de_estado(...) void
++ agregar_comentario(...): Comentario
++ listar_requerimientos(usuario): List
++ asignar_supervisor(...): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>688</x>
+      <y>48</y>
+      <w>160</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enumeration&gt;&gt;
+EstadoRequerimiento
+--
+ABIERTO
+EN_PROCESO
+RESUELTO
+CERRADO
+REABIERTO
+
+bg=yellow</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>16</x>
+      <y>680</y>
+      <w>128</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enumeration&gt;&gt;
+TipoEvento
+--
+CREACION
+ASIGNACION
+DERIVACION
+RESOLUCION
+REAPERTURA
+CAMBIO_ESTADO
+
+bg=yellow</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1360</x>
+      <y>320</y>
+      <w>128</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enumeration&gt;&gt;
+TipoSolicitud
+--
+ALTA_SERVICIO
+BAJA_SERVICIO
+
+bg=yellow</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>992</x>
+      <y>552</y>
+      <w>32</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;20.0;160.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>912</x>
+      <y>552</y>
+      <w>88</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>90.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>192</x>
+      <y>512</y>
+      <w>136</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>150.0;10.0;150.0;50.0;10.0;50.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>336</x>
+      <y>512</y>
+      <w>152</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0;170.0;50.0;170.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>840</x>
+      <y>72</y>
+      <w>168</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>190.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1304</x>
+      <y>344</y>
+      <w>72</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;70.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>80</x>
+      <y>600</y>
+      <w>200</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>230.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>264</x>
+      <y>304</y>
+      <w>24</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>464</x>
+      <y>232</y>
+      <w>352</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0;330.0;100.0;330.0;110.0;330.0;100.0;420.0;100.0;420.0;120.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>608</x>
+      <y>904</y>
+      <w>256</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>class ObserverPattern &lt;&lt;patrón&gt;&gt;
+--
+  Observado   : SistemaAyuda
+  Observador  : Supervisor
+  Mensaje     : Notificacion 
+bg=green
+
+ 
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>520</x>
+      <y>800</y>
+      <w>104</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.
+&lt;&lt;depende&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;20.0;110.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>528</x>
+      <y>592</y>
+      <w>168</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.
+&lt;&lt;crea&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;190.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>760</x>
+      <y>456</y>
+      <w>72</w>
+      <h>224</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.
+&lt;&lt;notifica&gt;&gt;</panel_attributes>
+    <additional_attributes>20.0;10.0;10.0;260.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>320</x>
+      <y>512</y>
+      <w>24</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>552</x>
+      <y>168</y>
+      <w>448</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1..n</panel_attributes>
+    <additional_attributes>540.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>448</x>
+      <y>408</y>
+      <w>256</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=n..n</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0;300.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>560</x>
+      <y>408</y>
+      <w>144</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=n..n</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0;160.0;60.0</additional_attributes>
+  </element>
+</diagram>
