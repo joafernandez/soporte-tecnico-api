@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 import bcrypt
 from typing import List, Optional
-from registros import Notificacion
+from domain.registros import Notificacion
 
 
 class Usuario(ABC):

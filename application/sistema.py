@@ -1,12 +1,11 @@
 from typing import List, Optional
-from usuarios import Usuario, Solicitante, Operador, Tecnico, Supervisor
-from requerimientos import Requerimiento, Incidente, Solicitud
-from servicios import Servicio
-from urgencias import Urgencia
-from eventos import EventoFactory
-from registros import Notificacion, Comentario
-from enums import TipoSolicitud
-
+from domain.usuarios import Usuario, Solicitante, Operador, Tecnico, Supervisor
+from domain.requerimientos import Requerimiento, Incidente, Solicitud
+from domain.servicios import Servicio
+from domain.urgencias import Urgencia
+from domain.eventos import EventoFactory
+from domain.registros import Notificacion, Comentario
+from domain.enums import TipoSolicitud
 
 class SistemaAyuda:
     """

@@ -3,9 +3,9 @@ Ejemplo de uso del Sistema de Mesa de Ayuda.
 Demuestra todos los patrones y funcionalidades.
 """
 
-from sistema import SistemaAyuda
-from urgencias import UrgenciaCritica, UrgenciaImportante, UrgenciaMenor
-from enums import TipoSolicitud
+from application.sistema import SistemaAyuda
+from domain.urgencias import UrgenciaCritica, UrgenciaImportante, UrgenciaMenor
+from domain.enums import TipoSolicitud
 
 
 def main():

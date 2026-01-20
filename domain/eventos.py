@@ -1,5 +1,5 @@
-from registros import Registro
-from enums import TipoEvento
+from domain.registros import Registro
+from domain.enums import TipoEvento
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:

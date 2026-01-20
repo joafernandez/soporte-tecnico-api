@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import List, Optional
-from enums import EstadoRequerimiento, TipoSolicitud
-from registros import Comentario
-from eventos import Evento
-from urgencias import Urgencia
-from servicios import Servicio
-from typing import TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
+
+from domain.enums import EstadoRequerimiento, TipoSolicitud
+from domain.registros import Comentario
+from domain.eventos import Evento
+from domain.urgencias import Urgencia
+from domain.servicios import Servicio
 
 if TYPE_CHECKING:
-    from usuarios import Usuario, Solicitante, Tecnico, Operador
+    from domain.usuarios import Usuario, Solicitante, Tecnico, Operador
 
 
 class Requerimiento(ABC):
