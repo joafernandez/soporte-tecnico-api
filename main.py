@@ -169,7 +169,7 @@ def main():
     
     sistema.reabrir_requerimiento(
         incidente1,
-        solicitante1,
+        operador1,
         "El problema volvió a ocurrir después de 2 horas"
     )
     print(f"✓ Incidente #{incidente1.id} reabierto")

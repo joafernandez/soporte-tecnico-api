@@ -151,20 +151,22 @@ class SistemaAyuda:
         
         # Notificar supervisores (Observer Pattern)
         self._notificar_supervisores(tecnico, f"Técnico {tecnico.nombre} resolvió req #{requerimiento.id}")
+        
     
-    def reabrir_requerimiento(self, requerimiento: Requerimiento, solicitante: Solicitante, motivo: str) -> None:
+    def reabrir_requerimiento(self, requerimiento: Requerimiento, usuario: Usuario, motivo: str) -> None:
         """Reabre un requerimiento resuelto."""
-        if requerimiento.solicitante != solicitante:
-            raise ValueError("Solo el solicitante original puede reabrir el requerimiento")
+        if not isinstance(usuario, (Operador, Tecnico)):
+         raise ValueError("Solo un Operador o un Técnico puede reabrir el requerimiento")
+
         
         requerimiento.reabrir()
         
         # Crear evento de reapertura usando Factory
-        evento = EventoFactory.crear_evento_reapertura(requerimiento, solicitante, motivo)
+        evento = EventoFactory.crear_evento_reapertura(requerimiento, usuario, motivo)
         requerimiento.agregar_evento(evento)
         
         # Agregar comentario con el motivo
-        requerimiento.agregar_comentario(f"Reabierto: {motivo}", solicitante)
+        requerimiento.agregar_comentario(f"Reabierto: {motivo}", usuario)
     
     def agregar_comentario(self, requerimiento: Requerimiento, usuario: Usuario, texto: str) -> Comentario:
         """Agrega un comentario a un requerimiento."""
