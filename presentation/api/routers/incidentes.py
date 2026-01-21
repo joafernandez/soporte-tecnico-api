@@ -1,17 +1,19 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from application.sistema import SistemaAyuda
-from domain.urgencias import UrgenciaCritica, UrgenciaImportante, UrgenciaMenor
+from presentation.api.dependencias import get_sistema
 from presentation.api.dtos.incident_create_dto import IncidenteCreateDTO
+
+from domain.urgencias import UrgenciaCritica, UrgenciaImportante, UrgenciaMenor
 
 router = APIRouter(prefix="/incidentes", tags=["Incidentes"])
 
-# Instancia única (por ahora, en memoria)
-sistema = SistemaAyuda()
-
 
 @router.post("/")
-def crear_incidente(dto: IncidenteCreateDTO):
+def crear_incidente(
+    dto: IncidenteCreateDTO,
+    sistema: SistemaAyuda = Depends(get_sistema)
+):
     # buscar solicitante por email
     solicitante = next((u for u in sistema.usuarios if u.email == dto.solicitante_email), None)
     if not solicitante:
@@ -23,6 +25,7 @@ def crear_incidente(dto: IncidenteCreateDTO):
         "importante": UrgenciaImportante(),
         "menor": UrgenciaMenor(),
     }
+
     urgencia = mapa_urgencias.get(dto.urgencia.lower())
     if not urgencia:
         raise HTTPException(status_code=400, detail="Urgencia inválida (critica/importante/menor)")
