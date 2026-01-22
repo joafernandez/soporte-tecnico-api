@@ -5,14 +5,19 @@ class RepositorioUsuariosMongo:
         conexion = ConexionMongo()
         self.coleccion = conexion.obtener_base_datos()["usuarios"]
 
-    def guardar(self, usuario):
+    def guardar(self, tipo_usuario: str, usuario, password: str) -> None:
+        """
+        Guarda un usuario del dominio en Mongo.
+        Guardamos también password para poder autenticar.
+        """
         documento = {
             "id": usuario.id,
+            "tipo_usuario": tipo_usuario,
             "nombre": usuario.nombre,
             "email": usuario.email,
-            "tipo": usuario.tipo
+            "password": password
         }
         self.coleccion.insert_one(documento)
 
-    def buscar_por_email(self, email):
+    def buscar_por_email(self, email: str):
         return self.coleccion.find_one({"email": email})
