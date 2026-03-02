@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
+from presentation.api.dtos.comentario_create_dto import ComentarioCreateDTO
 
 from application.sistema import SistemaAyuda
 from presentation.api.dependencias import get_sistema
 from presentation.api.dtos.solicitud_create_dto import SolicitudCreateDTO
 
 from domain.usuarios import Solicitante
-from domain.requerimientos import Solicitud
 from domain.enums import TipoSolicitud
 
 router = APIRouter(prefix="/solicitudes", tags=["Solicitudes"])
@@ -38,13 +38,54 @@ def crear_solicitud(
         tipo_solicitud=tipo,
         servicio=servicio
     )
-    
-    
-    return {
-    "id": solicitud.id,
-    "estado": getattr(solicitud.estado, "value", str(solicitud.estado)),
-    "tipo": getattr(solicitud.tipo_solicitud, "value", str(solicitud.tipo_solicitud))
-}
 
- #me quede aca no anduvo error 500 ya cambie el return 
- 
+    return {
+        "id": solicitud.id,
+        "estado": getattr(solicitud.estado, "value", str(solicitud.estado)),
+        "tipo": getattr(solicitud.tipo_solicitud, "value", str(solicitud.tipo_solicitud))
+    }
+
+
+@router.post("/{solicitud_id}/comentarios")
+def agregar_comentario_solicitud(
+    solicitud_id: int,
+    dto: ComentarioCreateDTO,
+    sistema: SistemaAyuda = Depends(get_sistema),
+):
+    # 1) Buscar autor por email
+    autor = sistema._buscar_usuario_por_email(dto.autor_email)
+    if not autor:
+        raise HTTPException(status_code=404, detail=f"No existe usuario con email {dto.autor_email}")
+
+    # 2) Validar que exista la solicitud en Mongo
+    doc_existente = sistema.repositorio_solicitudes.buscar_por_id(solicitud_id)
+    if not doc_existente:
+        raise HTTPException(status_code=404, detail=f"No existe solicitud con id {solicitud_id}")
+
+    # 3) Guardar comentario directo en Mongo (sin depender de memoria)
+    comentario_doc = {
+        "texto": dto.texto,
+        "autor_email": autor.email,
+        "autor_nombre": autor.nombre,
+        "fecha": __import__("datetime").datetime.now().isoformat(),
+    }
+
+    sistema.repositorio_solicitudes.collection.update_one(
+        {"id": solicitud_id},
+        {"$push": {"comentarios": comentario_doc}}
+    )
+
+    return {"ok": True, "solicitud_id": solicitud_id, "comentario": comentario_doc}
+
+
+@router.get("/")
+def listar_solicitudes(sistema: SistemaAyuda = Depends(get_sistema)):
+    return sistema.repositorio_solicitudes.listar()
+
+
+@router.get("/{solicitud_id}")
+def ver_solicitud(solicitud_id: int, sistema: SistemaAyuda = Depends(get_sistema)):
+    doc = sistema.repositorio_solicitudes.buscar_por_id(solicitud_id)
+    if not doc:
+        raise HTTPException(status_code=404, detail=f"No existe solicitud con id {solicitud_id}")
+    return doc

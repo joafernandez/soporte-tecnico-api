@@ -4,8 +4,6 @@ from infrastructure.repositorio_usuarios_mongo import RepositorioUsuariosMongo
 from infrastructure.repositorio_incidentes_mongo import RepositorioIncidentesMongo
 from infrastructure.repositorio_solicitudes_mongo import RepositorioSolicitudesMongo
 
-
-
 from domain.usuarios import Usuario, Solicitante, Operador, Tecnico, Supervisor
 from domain.requerimientos import Requerimiento, Incidente, Solicitud
 from domain.servicios import Servicio
@@ -123,31 +121,31 @@ class SistemaAyuda:
         return usuario
 
     # ==================== GESTIÓN DE REQUERIMIENTOS ====================
+
     def crear_incidente(
-    self,
-    solicitante: Solicitante,
-    descripcion: str,
-    urgencia: Urgencia,
-    servicio: Optional[Servicio] = None
-) -> Incidente:
-     """Crea un incidente con urgencia específica."""
-     if not isinstance(solicitante, Solicitante):
-        raise ValueError("Solo los solicitantes pueden crear requerimientos")
+        self,
+        solicitante: Solicitante,
+        descripcion: str,
+        urgencia: Urgencia,
+        servicio: Optional[Servicio] = None
+    ) -> Incidente:
+        """Crea un incidente con urgencia específica."""
+        if not isinstance(solicitante, Solicitante):
+            raise ValueError("Solo los solicitantes pueden crear requerimientos")
 
-     incidente = Incidente(descripcion, solicitante, urgencia, servicio)
+        incidente = Incidente(descripcion, solicitante, urgencia, servicio)
 
-    # 🔹 Guardar en memoria (como antes)
-     self.requerimientos.append(incidente)
+        # 🔹 Guardar en memoria (como antes)
+        self.requerimientos.append(incidente)
 
-    # 🔹 Guardar en Mongo (persistencia real)
-     self.repositorio_incidentes.guardar(incidente)
+        # ✅ Crear evento ANTES de guardar (para que quede persistido)
+        evento = EventoFactory.crear_evento_creacion(incidente, solicitante)
+        incidente.agregar_evento(evento)
 
-    # Crear evento de creación usando Factory
-     evento = EventoFactory.crear_evento_creacion(incidente, solicitante)
-     incidente.agregar_evento(evento)
+        # 🔹 Guardar en Mongo (persistencia real, incluye eventos/comentarios)
+        self.repositorio_incidentes.guardar(incidente)
 
-     return incidente
-
+        return incidente
 
     def crear_solicitud(
         self,
@@ -166,7 +164,8 @@ class SistemaAyuda:
         # Crear evento de creación usando Factory
         evento = EventoFactory.crear_evento_creacion(solicitud, solicitante)
         solicitud.agregar_evento(evento)
-        
+
+        # Guardar en Mongo (incluye eventos/comentarios)
         self.repositorio_solicitudes.guardar(solicitud)
 
         return solicitud
@@ -184,6 +183,12 @@ class SistemaAyuda:
         # Crear evento de asignación usando Factory
         evento = EventoFactory.crear_evento_asignacion(requerimiento, tecnico, operador)
         requerimiento.agregar_evento(evento)
+
+        # ✅ Persistir cambios (eventos/estado) en Mongo
+        if isinstance(requerimiento, Incidente):
+            self.repositorio_incidentes.actualizar(requerimiento)
+        elif isinstance(requerimiento, Solicitud):
+            self.repositorio_solicitudes.actualizar(requerimiento)
 
         # Notificar supervisores (Observer Pattern)
         self._notificar_supervisores(
@@ -204,6 +209,12 @@ class SistemaAyuda:
         # Crear evento de derivación usando Factory
         evento = EventoFactory.crear_evento_derivacion(requerimiento, tecnico_origen, tecnico_destino)
         requerimiento.agregar_evento(evento)
+
+        # ✅ Persistir cambios en Mongo
+        if isinstance(requerimiento, Incidente):
+            self.repositorio_incidentes.actualizar(requerimiento)
+        elif isinstance(requerimiento, Solicitud):
+            self.repositorio_solicitudes.actualizar(requerimiento)
 
         # Notificar supervisores (Observer Pattern)
         self._notificar_supervisores(
@@ -228,6 +239,12 @@ class SistemaAyuda:
         # Agregar comentario con la solución
         requerimiento.agregar_comentario(f"Solución: {solucion}", tecnico)
 
+        # ✅ Persistir cambios (eventos + comentarios + estado) en Mongo
+        if isinstance(requerimiento, Incidente):
+            self.repositorio_incidentes.actualizar(requerimiento)
+        elif isinstance(requerimiento, Solicitud):
+            self.repositorio_solicitudes.actualizar(requerimiento)
+
         # Notificar supervisores (Observer Pattern)
         self._notificar_supervisores(tecnico, f"Técnico {tecnico.nombre} resolvió req #{requerimiento.id}")
 
@@ -245,9 +262,23 @@ class SistemaAyuda:
         # Agregar comentario con el motivo
         requerimiento.agregar_comentario(f"Reabierto: {motivo}", usuario)
 
+        # ✅ Persistir cambios en Mongo
+        if isinstance(requerimiento, Incidente):
+            self.repositorio_incidentes.actualizar(requerimiento)
+        elif isinstance(requerimiento, Solicitud):
+            self.repositorio_solicitudes.actualizar(requerimiento)
+
     def agregar_comentario(self, requerimiento: Requerimiento, usuario: Usuario, texto: str) -> Comentario:
         """Agrega un comentario a un requerimiento."""
-        return requerimiento.agregar_comentario(texto, usuario)
+        comentario = requerimiento.agregar_comentario(texto, usuario)
+
+        # ✅ Persistir comentario en Mongo
+        if isinstance(requerimiento, Incidente):
+            self.repositorio_incidentes.actualizar(requerimiento)
+        elif isinstance(requerimiento, Solicitud):
+            self.repositorio_solicitudes.actualizar(requerimiento)
+
+        return comentario
 
     # ==================== CONSULTAS ====================
 
