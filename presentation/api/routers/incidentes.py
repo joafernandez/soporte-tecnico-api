@@ -7,6 +7,8 @@ from presentation.api.dtos.incident_create_dto import IncidenteCreateDTO
 
 from domain.usuarios import Solicitante
 from domain.urgencias import UrgenciaCritica, UrgenciaImportante, UrgenciaMenor
+from presentation.api.dtos.asignar_tecnico_dto import AsignarTecnicoDTO
+from presentation.api.dtos.derivar_tecnico_dto import DerivarTecnicoDTO
 
 router = APIRouter(prefix="/incidentes", tags=["Incidentes"])
 
@@ -89,3 +91,91 @@ def ver_incidente(incidente_id: int, sistema: SistemaAyuda = Depends(get_sistema
         raise HTTPException(status_code=404, detail=f"No existe incidente con id {incidente_id}")
     return doc
 
+from domain.usuarios import Operador, Tecnico
+from domain.eventos import EventoFactory
+
+
+@router.post("/{incidente_id}/asignar-tecnico")
+def asignar_tecnico_incidente(
+    incidente_id: int,
+    dto: AsignarTecnicoDTO,
+    sistema: SistemaAyuda = Depends(get_sistema),
+):
+    # Validar existencia del incidente en Mongo
+    doc = sistema.repositorio_incidentes.buscar_por_id(incidente_id)
+    if not doc:
+        raise HTTPException(status_code=404, detail=f"No existe incidente con id {incidente_id}")
+
+    # Traer operador y técnico desde Mongo (reconstruye objetos del dominio)
+    operador = sistema._buscar_usuario_por_email(dto.operador_email)
+    if not operador:
+        raise HTTPException(status_code=404, detail="Operador no encontrado")
+    if not isinstance(operador, Operador):
+        raise HTTPException(status_code=400, detail="El usuario no es operador")
+
+    tecnico = sistema._buscar_usuario_por_email(dto.tecnico_email)
+    if not tecnico:
+        raise HTTPException(status_code=404, detail="Técnico no encontrado")
+    if not isinstance(tecnico, Tecnico):
+        raise HTTPException(status_code=400, detail="El usuario no es técnico")
+
+    # Construir evento y persistir directo en Mongo
+    evento_doc = {
+        "texto": f"Requerimiento #{incidente_id} asignado a {tecnico.nombre}",
+        "autor_email": operador.email,
+        "autor_nombre": operador.nombre,
+        "fecha": __import__('datetime').datetime.now().isoformat(),
+        "tipo": "TipoEvento.ASIGNACION",
+    }
+
+    sistema.repositorio_incidentes.coleccion.update_one(
+        {"id": incidente_id},
+        {"$set": {"tecnico_asignado_email": tecnico.email, "estado": "en_proceso"},
+         "$push": {"eventos": evento_doc}}
+    )
+
+    return {"ok": True, "incidente_id": incidente_id, "tecnico_email": tecnico.email, "evento": evento_doc}
+@router.post("/{incidente_id}/derivar")
+def derivar_incidente(
+    incidente_id: int,
+    dto: DerivarTecnicoDTO,
+    sistema: SistemaAyuda = Depends(get_sistema),
+):
+    doc = sistema.repositorio_incidentes.buscar_por_id(incidente_id)
+    if doc is None:
+        raise HTTPException(status_code=404, detail=f"No existe incidente con id {incidente_id}")
+
+    tecnico_asignado = doc.get("tecnico_asignado_email")
+    if tecnico_asignado is None:
+        raise HTTPException(status_code=400, detail="El incidente no tiene técnico asignado aún")
+
+    if tecnico_asignado != dto.tecnico_origen_email:
+        raise HTTPException(status_code=400, detail="El incidente no está asignado al técnico origen")
+
+    tecnico_origen = sistema._buscar_usuario_por_email(dto.tecnico_origen_email)
+    if tecnico_origen is None:
+        raise HTTPException(status_code=404, detail="Técnico origen no encontrado")
+
+    tecnico_destino = sistema._buscar_usuario_por_email(dto.tecnico_destino_email)
+    if tecnico_destino is None:
+        raise HTTPException(status_code=404, detail="Técnico destino no encontrado")
+
+    autor = sistema._buscar_usuario_por_email(dto.autor_email)
+    if autor is None:
+        raise HTTPException(status_code=404, detail="Autor no encontrado")
+
+    evento_doc = {
+        "texto": f"Requerimiento #{incidente_id} derivado de {tecnico_origen.nombre} a {tecnico_destino.nombre}",
+        "autor_email": autor.email,
+        "autor_nombre": autor.nombre,
+        "fecha": __import__('datetime').datetime.now().isoformat(),
+        "tipo": "TipoEvento.DERIVACION",
+    }
+
+    sistema.repositorio_incidentes.coleccion.update_one(
+        {"id": incidente_id},
+        {"$set": {"tecnico_asignado_email": tecnico_destino.email},
+         "$push": {"eventos": evento_doc}}
+    )
+
+    return {"ok": True, "incidente_id": incidente_id, "tecnico_destino_email": tecnico_destino.email}

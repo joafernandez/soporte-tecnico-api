@@ -79,7 +79,7 @@ class SistemaAyuda:
 
     def _email_existe(self, email: str) -> bool:
         """Verifica si un email ya está registrado (Mongo)."""
-        doc = self.repositorio_usuarios.buscar_por_email(email)
+        doc = self.repositorio_usuarios.buscar_por_email_interno(email)
         return doc is not None
 
     def _buscar_usuario_por_email(self, email: str) -> Optional[Usuario]:
@@ -94,7 +94,8 @@ class SistemaAyuda:
             return usuario_mem
 
         # 2) Mongo
-        doc = self.repositorio_usuarios.buscar_por_email(email)
+        doc = self.repositorio_usuarios.buscar_por_email_interno(email)
+
         if not doc:
             return None
 

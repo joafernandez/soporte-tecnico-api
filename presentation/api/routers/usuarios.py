@@ -28,3 +28,16 @@ def crear_solicitante(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+
+@router.get("/")
+def listar_usuarios(sistema: SistemaAyuda = Depends(get_sistema)):
+    return sistema.repositorio_usuarios.listar()
+
+
+@router.get("/{email}")
+def ver_usuario_por_email(email: str, sistema: SistemaAyuda = Depends(get_sistema)):
+    doc = sistema.repositorio_usuarios.buscar_por_email(email)
+    if not doc:
+        raise HTTPException(status_code=404, detail=f"No existe usuario con email {email}")
+    return doc
+

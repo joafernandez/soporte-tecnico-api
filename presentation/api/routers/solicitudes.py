@@ -52,17 +52,14 @@ def agregar_comentario_solicitud(
     dto: ComentarioCreateDTO,
     sistema: SistemaAyuda = Depends(get_sistema),
 ):
-    # 1) Buscar autor por email
     autor = sistema._buscar_usuario_por_email(dto.autor_email)
     if not autor:
         raise HTTPException(status_code=404, detail=f"No existe usuario con email {dto.autor_email}")
 
-    # 2) Validar que exista la solicitud en Mongo
     doc_existente = sistema.repositorio_solicitudes.buscar_por_id(solicitud_id)
     if not doc_existente:
         raise HTTPException(status_code=404, detail=f"No existe solicitud con id {solicitud_id}")
 
-    # 3) Guardar comentario directo en Mongo (sin depender de memoria)
     comentario_doc = {
         "texto": dto.texto,
         "autor_email": autor.email,
