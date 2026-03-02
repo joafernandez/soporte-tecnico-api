@@ -7,3 +7,4 @@ class ConexionMongo:
 
     def obtener_base_datos(self):
         return self.base_datos
+

@@ -2,6 +2,9 @@ from typing import List, Optional
 
 from infrastructure.repositorio_usuarios_mongo import RepositorioUsuariosMongo
 from infrastructure.repositorio_incidentes_mongo import RepositorioIncidentesMongo
+from infrastructure.repositorio_solicitudes_mongo import RepositorioSolicitudesMongo
+
+
 
 from domain.usuarios import Usuario, Solicitante, Operador, Tecnico, Supervisor
 from domain.requerimientos import Requerimiento, Incidente, Solicitud
@@ -30,6 +33,7 @@ class SistemaAyuda:
         # ✅ Repositorio Mongo para usuarios
         self.repositorio_usuarios = RepositorioUsuariosMongo()
         self.repositorio_incidentes = RepositorioIncidentesMongo()
+        self.repositorio_solicitudes = RepositorioSolicitudesMongo()
 
     def _inicializar_servicios(self) -> None:
         """Crea los 3 servicios de la cooperativa."""
@@ -162,6 +166,8 @@ class SistemaAyuda:
         # Crear evento de creación usando Factory
         evento = EventoFactory.crear_evento_creacion(solicitud, solicitante)
         solicitud.agregar_evento(evento)
+        
+        self.repositorio_solicitudes.guardar(solicitud)
 
         return solicitud
 
