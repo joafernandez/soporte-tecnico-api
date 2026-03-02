@@ -9,6 +9,9 @@ from domain.usuarios import Solicitante
 from domain.urgencias import UrgenciaCritica, UrgenciaImportante, UrgenciaMenor
 from presentation.api.dtos.asignar_tecnico_dto import AsignarTecnicoDTO
 from presentation.api.dtos.derivar_tecnico_dto import DerivarTecnicoDTO
+from presentation.api.dtos.resolver_incidente_dto import ResolverIncidenteDTO
+from presentation.api.dtos.reabrir_incidente_dto import ReabrirIncidenteDTO
+
 
 router = APIRouter(prefix="/incidentes", tags=["Incidentes"])
 
@@ -179,3 +182,91 @@ def derivar_incidente(
     )
 
     return {"ok": True, "incidente_id": incidente_id, "tecnico_destino_email": tecnico_destino.email}
+
+
+@router.post("/{incidente_id}/resolver")
+def resolver_incidente(
+    incidente_id: int,
+    dto: ResolverIncidenteDTO,
+    sistema: SistemaAyuda = Depends(get_sistema),
+):
+    doc = sistema.repositorio_incidentes.buscar_por_id(incidente_id)
+    if not doc:
+        raise HTTPException(status_code=404, detail=f"No existe incidente con id {incidente_id}")
+
+    # validar técnico
+    tecnico = sistema._buscar_usuario_por_email(dto.tecnico_email)
+    if not tecnico:
+        raise HTTPException(status_code=404, detail="Técnico no encontrado")
+
+    # debe ser el técnico asignado
+    if doc.get("tecnico_asignado_email") != dto.tecnico_email:
+        raise HTTPException(status_code=400, detail="El incidente no está asignado a ese técnico")
+
+    # evento + comentario solución
+    evento_doc = {
+        "texto": f"Requerimiento #{incidente_id} resuelto: {dto.solucion}",
+        "autor_email": tecnico.email,
+        "autor_nombre": tecnico.nombre,
+        "fecha": __import__('datetime').datetime.now().isoformat(),
+        "tipo": "TipoEvento.RESOLUCION",
+    }
+    comentario_doc = {
+        "texto": f"Solución: {dto.solucion}",
+        "autor_email": tecnico.email,
+        "autor_nombre": tecnico.nombre,
+        "fecha": __import__('datetime').datetime.now().isoformat(),
+    }
+
+    sistema.repositorio_incidentes.coleccion.update_one(
+        {"id": incidente_id},
+        {"$set": {"estado": "resuelto"},
+         "$push": {"eventos": evento_doc, "comentarios": comentario_doc}}
+    )
+
+    return {"ok": True, "incidente_id": incidente_id}
+
+
+@router.post("/{incidente_id}/reabrir")
+def reabrir_incidente(
+    incidente_id: int,
+    dto: ReabrirIncidenteDTO,
+    sistema: SistemaAyuda = Depends(get_sistema),
+):
+    doc = sistema.repositorio_incidentes.buscar_por_id(incidente_id)
+    if not doc:
+        raise HTTPException(status_code=404, detail=f"No existe incidente con id {incidente_id}")
+
+    # Solo si está resuelto
+    if doc.get("estado") != "resuelto":
+        raise HTTPException(status_code=400, detail="El incidente no está resuelto, no se puede reabrir")
+
+    autor = sistema._buscar_usuario_por_email(dto.autor_email)
+    if not autor:
+        raise HTTPException(status_code=404, detail="Autor no encontrado")
+
+    evento_doc = {
+        "texto": f"Requerimiento #{incidente_id} reabierto: {dto.motivo}",
+        "autor_email": autor.email,
+        "autor_nombre": autor.nombre,
+        "fecha": __import__('datetime').datetime.now().isoformat(),
+        "tipo": "TipoEvento.REAPERTURA",
+    }
+    comentario_doc = {
+        "texto": f"Reabierto: {dto.motivo}",
+        "autor_email": autor.email,
+        "autor_nombre": autor.nombre,
+        "fecha": __import__('datetime').datetime.now().isoformat(),
+    }
+
+    sistema.repositorio_incidentes.coleccion.update_one(
+        {"id": incidente_id},
+        {"$set": {"estado": "reabierto"},
+         "$push": {"eventos": evento_doc, "comentarios": comentario_doc}}
+    )
+
+    return {"ok": True, "incidente_id": incidente_id}
+
+
+
+

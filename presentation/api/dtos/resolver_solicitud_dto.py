@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class ResolverIncidenteDTO(BaseModel):
+class ResolverSolicitudDTO(BaseModel):
     tecnico_email: str
     solucion: str
     
