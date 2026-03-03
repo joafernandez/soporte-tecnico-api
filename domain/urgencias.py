@@ -1,63 +1,63 @@
 from abc import ABC, abstractmethod
 
 
-class Urgencia(ABC):
+class Urgencia(ABC):  #me llaman en la clase requrimeintos
     """
-    Interfaz para el patrón Strategy de urgencias.
-    Define el contrato para calcular prioridad.
+    interfaz para el patrón Strategy de urgencias
+    define el contrato para calcular prioridad
     """
     
     @abstractmethod
     def calcular_prioridad(self) -> int:
-        """Calcula el valor de prioridad del requerimiento."""
+        """calcula el valor de prioridad del requerimiento"""
         pass
     
     @abstractmethod
     def get_nombre(self) -> str:
-        """Retorna el nombre de la urgencia."""
+        """retorna el nombre de la urgencia"""
         pass
 
 
 class UrgenciaCritica(Urgencia):
     """
-    Urgencia crítica - máxima prioridad.
-    Para problemas graves que requieren atención inmediata.
+    si la urgencia es crítica - máxima prioridad
+    para problemas graves que requieren atencion  inmediata
     """
     
     def calcular_prioridad(self) -> int:
-        """Retorna prioridad máxima."""
+        """retorna prioridad max"""
         return 10
     
     def get_nombre(self) -> str:
-        """Retorna nombre de la urgencia."""
+        """retorna nombre de la urgencia"""
         return "Crítica"
 
 
 class UrgenciaImportante(Urgencia):
     """
-    Urgencia importante - prioridad media.
-    Para problemas significativos que afectan el servicio.
+    urgencia importante - prioridad media
+    para problemas que afectan el servicio
     """
     
     def calcular_prioridad(self) -> int:
-        """Retorna prioridad media."""
+        """retorna prioridad media"""
         return 7
     
     def get_nombre(self) -> str:
-        """Retorna nombre de la urgencia."""
+        """retorna nombre de la urgencia"""
         return "Importante"
 
 
 class UrgenciaMenor(Urgencia):
     """
-    Urgencia menor - baja prioridad.
-    Para problemas menores que no afectan significativamente el servicio.
+    urgencia menor - baja prioridad
+     para problemas menores que no afectan tanto el servicio
     """
     
     def calcular_prioridad(self) -> int:
-        """Retorna prioridad baja."""
+        """retorna prioridad baja"""
         return 3
     
     def get_nombre(self) -> str:
-        """Retorna nombre de la urgencia."""
+        """retorna nombre de la urgencia"""
         return "Menor"

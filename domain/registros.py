@@ -8,9 +8,9 @@ if TYPE_CHECKING:
 
 class Registro(ABC):
     """
-    Clase base abstracta para todo registro auditable del sistema.
+    clase base abstracta para todo registro auditable del sistema.
     
-    Attributes:
+    attributes:
         texto: Contenido del registro
         autor: Usuario que creó el registro
         fecha: Timestamp de creación automático
@@ -27,17 +27,19 @@ class Registro(ABC):
 
 class Comentario(Registro):
     """
-    Comentario inmutable en un requerimiento.
-    Hereda de Registro sin atributos adicionales.
+    comentario en un requerimiento
+    Hereda de Registro sin atributos adicionales
+    
+    LO DEJO IGUAL PARA FUTURO !!!!!!!!!!
     """
     pass
 
 
 class Notificacion(Registro):
     """
-    Notificación enviada a un supervisor (Observer Pattern).
+    notificación enviada a un supervisor (Observer Pattern)
     
-    Attributes:
+    Atributos:
         leida: Indica si la notificación fue vista
     """
     

@@ -1,14 +1,10 @@
 
 class Servicio:
-    """
-    Representa un servicio ofrecido por la cooperativa.
+  
+    #representa un servicio ofrecido por la cooperativa
+    #actva o desactiva 
     
-    Attributes:
-        id: Identificador único
-        nombre: Nombre del servicio
-        descripcion: Descripción detallada
-        activo: Estado del servicio
-    """
+   
     
     _contador_id: int = 0
     
@@ -20,11 +16,11 @@ class Servicio:
         self.activo: bool = True
     
     def activar(self) -> None:
-        """Activa el servicio."""
+        """activa el servicio"""
         self.activo = True
     
     def desactivar(self) -> None:
-        """Desactiva el servicio."""
+        """desactiva el servicio"""
         self.activo = False
     
     def __str__(self) -> str:

@@ -7,15 +7,7 @@ from domain.registros import Notificacion
 
 class Usuario(ABC):
     """
-    Clase base abstracta para todos los usuarios del sistema.
-    
-    Attributes:
-        id: Identificador único
-        nombre: Nombre completo
-        email: Correo electrónico (único)
-        password_hash: Contraseña hasheada con Bcrypt
-        fecha_creacion: Timestamp de registro
-        ultimo_acceso: Timestamp de último login
+    clase base abstracta para todos los usuarios 
     """
     
     _contador_id: int = 0
@@ -30,26 +22,26 @@ class Usuario(ABC):
         self.ultimo_acceso: Optional[datetime] = None
     
     def _hashear_password(self, password: str) -> str:
-        """Hashea la contraseña usando Bcrypt."""
+        """Hashea la contraseña usando Bcrypt"""
         salt = bcrypt.gensalt()
         return bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
     
     def verificar_password(self, password: str) -> bool:
-        """Verifica si la contraseña es correcta."""
+        """verifica si la contraseña es correcta."""
         return bcrypt.checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
     
     def actualizar_ultimo_acceso(self) -> None:
-        """Actualiza el timestamp de último acceso."""
+        #actualiza el timestamp de último acceso
         self.ultimo_acceso = datetime.now()
     
     @abstractmethod
     def puede_crear_requerimiento(self) -> bool:
-        """Determina si el usuario puede crear requerimientos."""
+        """determina si el usuario puede crear requerimientos"""
         pass
     
     @abstractmethod
     def puede_asignar_tecnico(self) -> bool:
-        """Determina si el usuario puede asignar técnicos."""
+        """det etermina si el usuario puede asignar técnicos """
         pass
     
     def __str__(self) -> str:
@@ -58,8 +50,8 @@ class Usuario(ABC):
 
 class Solicitante(Usuario):
     """
-    Usuario que crea requerimientos y ve solo los suyos.
-    Puede usar cualquier email.
+    Usuario que crea requerimientos y ve solo los suyos
+    puede usar cualq email
     """
     
     def puede_crear_requerimiento(self) -> bool:
@@ -71,8 +63,8 @@ class Solicitante(Usuario):
 
 class Operador(Usuario):
     """
-    Usuario que asigna técnicos a requerimientos.
-    Ve todos los requerimientos del sistema.
+    Usuario que asigna técnicos a requerimientos
+    Ve todos los requerimientos del sistema
     Email debe ser @comunicarlos.com.ar
     """
     
@@ -90,9 +82,9 @@ class Operador(Usuario):
 
 class Tecnico(Usuario):
     """
-    Usuario que resuelve requerimientos asignados.
-    Puede derivar tickets a otros técnicos.
-    Email debe ser @comunicarlos.com.ar
+    Usuario que resuelve requerimientos asignados
+    Puede derivar tickets a otros técnicos
+    email debe ser @comunicarlos.com.ar
     """
     
     def __init__(self, nombre: str, email: str, password: str) -> None:

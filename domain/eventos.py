@@ -9,9 +9,9 @@ if TYPE_CHECKING:
 
 class Evento(Registro):
     """
-    Evento del sistema con tipo específico.
+    evento del sistema con tipo específico.
     
-    Attributes:
+    atributo
         tipo: Tipo de evento (enum)
     """
     
@@ -22,42 +22,42 @@ class Evento(Registro):
 
 class EventoFactory:
     """
-    Factory para crear eventos de forma centralizada.
+    voy a usar factory para crear eventos de forma centralizada
     Patrón: Factory Method
     """
     
     @staticmethod
     def crear_evento_creacion(requerimiento: 'Requerimiento', autor: 'Usuario') -> Evento:
-        """Crea evento de creación de requerimiento."""
+        """crea evento de creación de requerimiento"""
         texto = f"Requerimiento #{requerimiento.id} creado"
         return Evento(texto, autor, TipoEvento.CREACION)
     
     @staticmethod
     def crear_evento_asignacion(requerimiento: 'Requerimiento', tecnico: 'Usuario', operador: 'Usuario') -> Evento:
-        """Crea evento de asignación a técnico."""
+        """crea evento de asignación a técnico"""
         texto = f"Requerimiento #{requerimiento.id} asignado a {tecnico.nombre}"
         return Evento(texto, operador, TipoEvento.ASIGNACION)
     
     @staticmethod
     def crear_evento_derivacion(requerimiento: 'Requerimiento', tecnico_origen: 'Usuario', tecnico_destino: 'Usuario') -> Evento:
-        """Crea evento de derivación entre técnicos."""
+        """crea evento de derivación entre técnicos"""
         texto = f"Requerimiento #{requerimiento.id} derivado de {tecnico_origen.nombre} a {tecnico_destino.nombre}"
         return Evento(texto, tecnico_origen, TipoEvento.DERIVACION)
     
     @staticmethod
     def crear_evento_resolucion(requerimiento: 'Requerimiento', tecnico: 'Usuario', solucion: str) -> Evento:
-        """Crea evento de resolución."""
+        """crea evento de resolución"""
         texto = f"Requerimiento #{requerimiento.id} resuelto: {solucion}"
         return Evento(texto, tecnico, TipoEvento.RESOLUCION)
     
     @staticmethod
     def crear_evento_reapertura(requerimiento: 'Requerimiento', solicitante: 'Usuario', motivo: str) -> Evento:
-        """Crea evento de reapertura."""
+        """crea evento de reapertura"""
         texto = f"Requerimiento #{requerimiento.id} reabierto: {motivo}"
         return Evento(texto, solicitante, TipoEvento.REAPERTURA)
     
     @staticmethod
     def crear_evento_cambio_estado(requerimiento: 'Requerimiento', autor: 'Usuario', estado_anterior: str, estado_nuevo: str) -> Evento:
-        """Crea evento de cambio de estado."""
+        """crea evento de cambio de estado"""
         texto = f"Requerimiento #{requerimiento.id} cambió de {estado_anterior} a {estado_nuevo}"
         return Evento(texto, autor, TipoEvento.CAMBIO_ESTADO)

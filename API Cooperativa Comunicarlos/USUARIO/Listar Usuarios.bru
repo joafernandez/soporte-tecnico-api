@@ -1,0 +1,15 @@
+meta {
+  name: Listar Usuarios
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://127.0.0.1:8000/usuarios/
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

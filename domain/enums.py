@@ -1,7 +1,7 @@
 from enum import Enum
 
 class EstadoRequerimiento(Enum):
-    """Estados posibles de un requerimiento."""
+    """estados posibles de un requerimiento"""
     ABIERTO = "abierto"
     EN_PROCESO = "en_proceso"
     RESUELTO = "resuelto"
@@ -10,7 +10,7 @@ class EstadoRequerimiento(Enum):
 
 
 class TipoEvento(Enum):
-    """Tipos de eventos del sistema."""
+    """tipos de eventos del sistema"""
     CREACION = "creacion"
     ASIGNACION = "asignacion"
     DERIVACION = "derivacion"
@@ -20,6 +20,6 @@ class TipoEvento(Enum):
 
 
 class TipoSolicitud(Enum):
-    """Tipos de solicitud de servicio."""
+    """tipos de solicitud de servici"""
     ALTA_SERVICIO = "alta_servicio"
     BAJA_SERVICIO = "baja_servicio"
